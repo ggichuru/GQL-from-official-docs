@@ -14,6 +14,11 @@ let schema = buildSchema(`
         quoteOfTheDay: String
         random: Float!
         getDie(numSides: Int): RandomDie
+        getMessage: String
+    }
+
+    type Mutation {
+        setMessage(message: String): String
     }
 `)
 
@@ -36,6 +41,8 @@ class RandomDie {
     }
 }
 
+
+let fakeDB = {}
 // Define resolver functions
 let resolvers = {
     quoteOfTheDay: () => {
@@ -46,6 +53,13 @@ let resolvers = {
     },
     getDie: ({ numSides }) => {
         return new RandomDie(numSides || 6)
+    },
+    setMessage: ({ message }) => {
+        fakeDB.message = message
+        return message
+    },
+    getMessage: () => {
+        return fakeDB.message
     }
 }
 
