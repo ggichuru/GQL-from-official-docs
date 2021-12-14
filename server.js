@@ -5,14 +5,22 @@ const { buildSchema } = require('graphql')
 // Construct a schema
 let schema = buildSchema(`
     type Query {
-        hello: String
+        quoteOfTheDay: String
+        random: Float!
+        rollThreeDice: [Int]
     }
 `)
 
 // Define resolver functions
 let resolvers = {
-    hello: () => {
-        return 'Hello Iello Jello Kello Mello Nello Oello'
+    quoteOfTheDay: () => {
+        return Math.random() < 0.5 ? 'Take it easy' : 'Salvation lies within'
+    },
+    random: () => {
+        return Math.random()
+    },
+    rollThreeDice: () => {
+        return [1, 2, 3].map(_ => 1 + Math.floor(Math.random() * 6))
     }
 }
 
@@ -22,4 +30,6 @@ app.use('/graphql', graphqlHTTP({
     rootValue: resolvers,
     graphiql: true
 }))
-app.listen(4000)
+app.listen(4000, () => {
+    console.log("Server running on http://localhost:4000/graphql")
+})
