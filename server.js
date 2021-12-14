@@ -4,12 +4,37 @@ const { buildSchema } = require('graphql')
 
 // Construct a schema
 let schema = buildSchema(`
+    type RandomDie {
+        roll(numRolls: Int!): [Int]
+        numSides: Int!
+        rollOnce: Int!
+    }
+
     type Query {
         quoteOfTheDay: String
         random: Float!
-        rollDice(numDice: Int!, numSides: Int): [Int]
+        getDie(numSides: Int): RandomDie
     }
 `)
+
+
+class RandomDie {
+    constructor(numSides) {
+        this.numSides = numSides
+    }
+
+    rollOnce() {
+        return 1 + Math.floor(Math.random() * this.numSides);
+    }
+
+    roll({ numRolls }) {
+        let output = []
+        for (let i = 0; i < numRolls; i++) {
+            output.push(this.rollOnce())
+        }
+        return output
+    }
+}
 
 // Define resolver functions
 let resolvers = {
@@ -19,12 +44,8 @@ let resolvers = {
     random: () => {
         return Math.random()
     },
-    rollDice: ({ numDice, numSides }) => {
-        let output = []
-        for (let i = 0; i < numDice; i++) {
-            output.push(1 + Math.floor(Math.random() * (numSides || 6)))
-        }
-        return output
+    getDie: ({ numSides }) => {
+        return new RandomDie(numSides || 6)
     }
 }
 
